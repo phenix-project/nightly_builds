@@ -32,6 +32,10 @@ jobs:
     vmImage: ubuntu-latest
   timeoutInMinutes: 90
 
+  variables:
+    PYTHON_VERSION: py27
+    OS: linux-64
+
   steps:
 
   # download sources
@@ -55,7 +59,7 @@ jobs:
       project: '$(resources.pipeline.build_cache.projectID)'
       pipeline: '$(resources.pipeline.build_cache.pipelineID)'
       allowPartiallySucceededBuilds: true
-      artifact: py27_linux-64
+      artifact: $(PYTHON_VERSION)_$(OS)
       path: $(Pipeline.Workspace)/channel
     displayName: Download cached conda packages
     condition: >
