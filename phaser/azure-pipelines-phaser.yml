@@ -1,0 +1,19 @@
+# Script for nightly build of phaser
+
+resources:
+  repositories:
+    - repository: cctbx_project
+      type: github
+      name: phenix-project/cctbx_project
+
+jobs:
+- job: test
+  pool:
+    vmImage: ubuntu-latest
+  timeoutInMinutes: 90
+
+  steps:
+
+  # download sources
+  - checkout: cctbx_project
+    path: ./modules/cctbx_project
