@@ -171,15 +171,6 @@ jobs:
     continueOnError: true
     failOnStderr: false
 
-  # build (cctbx for vs2008 and vs2015, cctbxlite for vs2017)
-  - script: |
-      ECHO ON
-      cd $(Pipeline.Workspace)\modules
-      rmdir /Q /S cbflib
-      rmdir /Q /S dxtbx
-    displayName: Remove modules for cctbxlite builder (vs2017)
-    condition: eq('${{ parameters.vs }}', 'vs2017')
-
   - script: |
       cd $(Pipeline.Workspace)
       call "C:\Program Files (x86)\Common Files\Microsoft\Visual C++ for Python\9.0\vcvarsall.bat" amd64
