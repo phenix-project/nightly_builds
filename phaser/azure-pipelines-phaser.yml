@@ -1,10 +1,23 @@
 # Script for nightly build of phaser
 
+# no continuous integration builds or pull requests
+trigger: none
+pr: none
+
+# Daily builds
+schedules:
+- cron: '0 2 * * *'
+  displayName: Daily test for phaser
+  branches:
+    include:
+    - master
+
 resources:
   repositories:
     - repository: cctbx_project
       type: github
       name: phenix-project/cctbx_project
+      endpoint: phenix-project
 
 jobs:
 - job: test
