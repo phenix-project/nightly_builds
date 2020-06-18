@@ -26,87 +26,16 @@ resources:
     project: cctbx_project
     source: 'Update build cache'
 
-jobs:
-- job: test
-  pool:
-    vmImage: ubuntu-latest
-  timeoutInMinutes: 90
+stages:
+- stage: Preparation
+  displayName: Download
+  jobs:
+    - template: ./download-source.yml
 
-  variables:
-    PYTHON_VERSION: py27
-    OS: linux-64
-
-  steps:
-
-  # download sources
-  - checkout: cctbx_project
-    path: ./modules/cctbx_project
-
-  - script: |
-      cd $(Pipeline.Workspace)
-      ln -s modules/cctbx_project/libtbx/auto_build/bootstrap.py
-    displayName: Link bootstrap.py
-
-  - script: |
-      cd $(Pipeline.Workspace)
-      python bootstrap.py hot update --builder=phaser
-    displayName: Download sources
-
-  # construct conda environment
-  - task: DownloadPipelineArtifact@2
-    inputs:
-      source: 'specific'
-      project: '$(resources.pipeline.build_cache.projectID)'
-      pipeline: '$(resources.pipeline.build_cache.pipelineID)'
-      allowPartiallySucceededBuilds: true
-      artifact: $(PYTHON_VERSION)_$(OS)
-      path: $(Pipeline.Workspace)/channel
-    displayName: Download cached conda packages
-    condition: >
-      and(ne(variables['Build.DefinitionName'], 'Update build cache'),
-          ne(variables['Build.DefinitionName'], 'Full'))
-
-  - script: |
-      set -x -e
-      conda install -y conda-build
-      cd $(Pipeline.Workspace)/channel
-      conda index .
-      echo @EXPLICIT > env.txt
-      for filename in `cat filenames.txt`; do
-        echo file://$(Pipeline.Workspace)/channel/${filename} >> env.txt
-      done
-    displayName: Build local channel
-
-  - script: |
-      set -x -e
-      conda create -y --offline -n $(PYTHON_VERSION) --file $(Pipeline.Workspace)/channel/env.txt
-      conda install -y -c conda-forge --no-deps -n $(PYTHON_VERSION) junit-xml
-    displayName: Create conda environment
-
-  # build
-  - script: |
-      set -x -e
-      conda activate $(PYTHON_VERSION)
-      cd $(Pipeline.Workspace)
-      python bootstrap.py build --builder=phaser --use-conda=${CONDA_PREFIX} --nproc=4
-      cd build
-    displayName: Configure and Build
-
-  # test
-  - script: |
-      set -x -e
-      source $(Pipeline.Workspace)/miniconda/etc/profile.d/conda.sh
-      conda activate $(PYTHON_VERSION)
-      cd $(Pipeline.Workspace)
-      source ./build/setpaths.sh
-      mkdir tests
-      cd tests
-      libtbx.run_tests_parallel module=phaser_regression nproc=4
-    failOnStderr: false
-    displayName: Test
-
-  - task: PublishTestResults@2
-    condition: succeededOrFailed()
-    inputs:
-      testResultsFormat: 'JUnit'
-      testResultsFiles: '$(Pipeline.Workspace)/tests/output.xml'
+- stage: Build
+  displayName: Build and test
+  dependsOn: Preparation
+  jobs:
+    - template: ./full-build.yml
+      parameters:
+        modules: modules
