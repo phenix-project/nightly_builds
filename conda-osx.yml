@@ -70,8 +70,22 @@ jobs:
     displayName: Remove homebrew
 
   # download daily cached build directory for builds
-  # always do builds from scratch on Saturday night (Pacific)
+  # always do builds from scratch (starting with cctbx build) on Saturday night (Pacific)
   # always do builds from scratch for "Weekly" pipeline
+  - task: DownloadPipelineArtifact@2
+    inputs:
+      source: 'specific'
+      project: '$(resources.pipeline.cctbx_build_cache.projectID)'
+      pipeline: '$(resources.pipeline.cctbx_build_cache.pipelineID)'
+      allowPartiallySucceededBuilds: true
+      artifact: '$(artifact_name)'
+      path: $(Pipeline.Workspace)
+    displayName: Download cached build
+    condition: >
+      and(eq(variables['Build.DefinitionName'], '${{ parameters.pipeline }}'),
+          eq(variables['day'], 'Sunday'))
+    continueOnError: true
+
   - task: DownloadPipelineArtifact@2
     inputs:
       source: 'specific'
