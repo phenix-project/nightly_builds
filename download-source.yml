@@ -27,7 +27,7 @@ jobs:
 
   - script: |
       cd $(Pipeline.Workspace)
-      python bootstrap.py hot update --builder=${{ parameters.builder }} ${{ parameters.flags }}
+      python bootstrap.py hot update --builder=${{ parameters.options.builder }} ${{ parameters.flags }}
     displayName: Download sources
 
   # change optimization level (linux, macOS)
