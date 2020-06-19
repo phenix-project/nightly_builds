@@ -227,6 +227,9 @@ jobs:
       mkdir tests
       cd tests
       call libtbx.run_tests_parallel module=${{ parameters.test_module }} nproc=4
+    condition: or(and(eq(variables['PYTHON_VERSION'], 'py27'),
+                      eq('${{ parameters.vs }}', 'vs2015')),
+                  ne(variables['PYTHON_VERSION'], 'py27'))
     failOnStderr: false
     displayName: Test
 
