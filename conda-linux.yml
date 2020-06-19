@@ -2,6 +2,9 @@
 # linux image descriptions
 # https://github.com/actions/virtual-environments/blob/master/images/linux/Ubuntu1804-README.md
 #
+# Template Parameters:
+#   pipeline: pipeline name
+#
 # Parameters:
 #   distribution: centos, ubuntu
 #   version: [6, 10]

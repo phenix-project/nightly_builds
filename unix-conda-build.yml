@@ -6,6 +6,10 @@
 #   PYTHON_VERSION: py27, py36, py37, py38
 #   MODULES: <modules artifact name>
 #
+# Template Parameters:
+#   builder: cctbx builder
+#   test_module: module to test
+#
 # Optional Parameters:
 #   distribution: centos, ubuntu
 #   version: [6, 10]
