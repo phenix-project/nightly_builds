@@ -145,7 +145,7 @@ jobs:
       path: $(Pipeline.Workspace)
     displayName: Download cached build
     condition: >
-      and(or(and(eq(variables['Build.DefinitionName'], '${{ parameters.pipeline'),
+      and(or(and(eq(variables['Build.DefinitionName'], '${{ parameters.pipeline }}'),
                  ne(variables['day'], 'Sunday')),
              eq(variables['Build.DefinitionName'], 'CI'),
              eq(variables['Build.DefinitionName'], 'CI branch'),
@@ -160,7 +160,7 @@ jobs:
       tar -xf build.tar
     displayName: Extract build tarball
     condition: >
-      and(or(and(eq(variables['Build.DefinitionName'], '${{ parameters.pipeline'),
+      and(or(and(eq(variables['Build.DefinitionName'], '${{ parameters.pipeline }}'),
                  ne(variables['day'], 'Sunday')),
              eq(variables['Build.DefinitionName'], 'CI'),
              eq(variables['Build.DefinitionName'], 'CI branch'),
