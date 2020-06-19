@@ -7,6 +7,7 @@
 #   vmImage: [10, 14]  # macOs version
 #   xcode_version: [11, 3, 1]  # xCode version
 #   modules: <modules artifact name>
+#   pipeline: <pipeline name>
 
 jobs:
 - job: ${{ format('{0}_{1}', format('macOS_{0}', join('_', parameters.vmImage)), format('xcode_{0}', join('_', parameters.xcode_version)) ) }}
@@ -64,7 +65,7 @@ jobs:
     displayName: Remove homebrew
 
   # download daily cached build directory for builds
-  # always do builds from scratch for "phaser_regression" on Saturday night (Pacific)
+  # always do builds from scratch on Saturday night (Pacific)
   # always do builds from scratch for "Weekly" pipeline
   - task: DownloadPipelineArtifact@2
     inputs:
@@ -76,7 +77,7 @@ jobs:
       path: $(Pipeline.Workspace)
     displayName: Download cached build
     condition: >
-      or(and(eq(variables['Build.DefinitionName'], 'phaser_regression'),
+      or(and(eq(variables['Build.DefinitionName'], '${{ parameters.pipeline }}'),
              ne(variables['day'], 'Sunday')),
          eq(variables['Build.DefinitionName'], 'CI'),
          eq(variables['Build.DefinitionName'], 'CI branch'),
@@ -88,7 +89,7 @@ jobs:
       tar -xf build.tar
     displayName: Extract build tarball
     condition: >
-      or(and(eq(variables['Build.DefinitionName'], 'phaser_regression'),
+      or(and(eq(variables['Build.DefinitionName'], '${{ parameters.pipeline }}'),
              ne(variables['day'], 'Sunday')),
          eq(variables['Build.DefinitionName'], 'CI'),
          eq(variables['Build.DefinitionName'], 'CI branch'),
@@ -105,7 +106,7 @@ jobs:
       tar -chf build.tar build
     displayName: Build tarball
     condition: >
-      and(eq(variables['Build.DefinitionName'], 'phaser_regression'),
+      and(eq(variables['Build.DefinitionName'], '${{ parameters.pipeline }}'),
           or(eq(variables['Build.Reason'], 'Schedule'),
              eq(variables['Build.Reason'], 'Manual')),
           eq(variables['System.StageAttempt'], 1),
@@ -116,7 +117,7 @@ jobs:
   - publish: $(Pipeline.Workspace)/build.tar
     artifact: $(artifact_name)
     condition: >
-      and(eq(variables['Build.DefinitionName'], 'phaser_regression'),
+      and(eq(variables['Build.DefinitionName'], '${{ parameters.pipeline }}'),
           or(eq(variables['Build.Reason'], 'Schedule'),
              eq(variables['Build.Reason'], 'Manual')),
           eq(variables['System.StageAttempt'], 1),

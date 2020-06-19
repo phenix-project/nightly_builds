@@ -4,6 +4,7 @@
 # Parameters:
 #   flags: <empty>, --use-conda
 #   optimization: <empty>, 0, 1, 2, 3
+#   builder: cctbx builder (e.g. cctbx, phaser, etc.)
 
 jobs:
 - job: modules${{ parameters.optimization }}
@@ -24,7 +25,7 @@ jobs:
 
   - script: |
       cd $(Pipeline.Workspace)
-      python bootstrap.py hot update --builder=phaser ${{ parameters.flags }}
+      python bootstrap.py hot update --builder=${{ parameters.builder }} ${{ parameters.flags }}
     displayName: Download sources
 
   # change optimization level (linux, macOS)

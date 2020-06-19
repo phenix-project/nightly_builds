@@ -19,10 +19,13 @@ resources:
       name: phenix-project/cctbx_project
       endpoint: phenix-project
   pipelines:
+  - pipeline: build_cache
+    project: cctbx_project
+    source: 'phaser_regression'
   - pipeline: data_cache
     project: cctbx_project
     source: 'Update data cache'
-  - pipeline: build_cache
+  - pipeline: cctbx_build_cache
     project: cctbx_project
     source: 'Update build cache'
 
@@ -30,12 +33,15 @@ stages:
 - stage: Preparation
   displayName: Download
   jobs:
-    - template: ./download-source.yml
+    - template: ../download-source.yml
+      parameters:
+        builder: phaser
 
 - stage: Build
   displayName: Build and test
   dependsOn: Preparation
   jobs:
-    - template: ./full-build.yml
+    - template: ../full-build.yml
       parameters:
         modules: modules
+        pipeline: phaser_regression
