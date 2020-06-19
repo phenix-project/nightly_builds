@@ -116,6 +116,7 @@ jobs:
       project: '$(resources.pipeline.cctbx_build_cache.projectID)'
       pipeline: '$(resources.pipeline.cctbx_build_cache.pipelineID)'
       allowPartiallySucceededBuilds: true
+      allowFailedBuilds: true
       artifact: '$(artifact_name)'
       path: $(Pipeline.Workspace)
     displayName: Download cached build
@@ -130,6 +131,7 @@ jobs:
       project: '$(resources.pipeline.build_cache.projectID)'
       pipeline: '$(resources.pipeline.build_cache.pipelineID)'
       allowPartiallySucceededBuilds: true
+      allowFailedBuilds: true
       artifact: '$(artifact_name)'
       path: $(Pipeline.Workspace)
     displayName: Download cached build
