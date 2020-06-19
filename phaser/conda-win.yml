@@ -133,7 +133,7 @@ jobs:
     displayName: Create conda environment
 
   # download daily cached build directory for builds
-  # always do builds from scratch for "Update build cache" and "Weekly"
+  # always do builds from scratch for "phaser_regression" and "Weekly"
   # pipelines
   - task: DownloadPipelineArtifact@2
     inputs:
@@ -145,7 +145,7 @@ jobs:
       path: $(Pipeline.Workspace)
     displayName: Download cached build
     condition: >
-      and(or(and(eq(variables['Build.DefinitionName'], 'Update build cache'),
+      and(or(and(eq(variables['Build.DefinitionName'], 'phaser_regression'),
                  ne(variables['day'], 'Sunday')),
              eq(variables['Build.DefinitionName'], 'CI'),
              eq(variables['Build.DefinitionName'], 'CI branch'),
@@ -160,7 +160,7 @@ jobs:
       tar -xf build.tar
     displayName: Extract build tarball
     condition: >
-      and(or(and(eq(variables['Build.DefinitionName'], 'Update build cache'),
+      and(or(and(eq(variables['Build.DefinitionName'], 'phaser_regression'),
                  ne(variables['day'], 'Sunday')),
              eq(variables['Build.DefinitionName'], 'CI'),
              eq(variables['Build.DefinitionName'], 'CI branch'),
@@ -214,13 +214,13 @@ jobs:
       testResultsFormat: 'JUnit'
       testResultsFiles: '$(Pipeline.Workspace)\tests\output.xml'
 
-# preserve permissions
+  # preserve permissions
   - script: |
       cd $(Pipeline.Workspace)
       tar -chf build.tar build
     displayName: Build tarball
     condition: >
-      and(eq(variables['Build.DefinitionName'], 'Update build cache'),
+      and(eq(variables['Build.DefinitionName'], 'phaser_regression'),
           or(eq(variables['Build.Reason'], 'Schedule'),
              eq(variables['Build.Reason'], 'Manual')),
           eq(variables['System.StageAttempt'], 1),
@@ -234,7 +234,7 @@ jobs:
   - publish: $(Pipeline.Workspace)/build.tar
     artifact: $(artifact_name)
     condition: >
-      and(eq(variables['Build.DefinitionName'], 'Update build cache'),
+      and(eq(variables['Build.DefinitionName'], 'phaser_regression'),
           or(eq(variables['Build.Reason'], 'Schedule'),
              eq(variables['Build.Reason'], 'Manual')),
           eq(variables['System.StageAttempt'], 1),
