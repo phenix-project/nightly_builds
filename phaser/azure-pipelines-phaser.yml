@@ -6,7 +6,7 @@ pr: none
 
 # Daily builds
 schedules:
-- cron: '0 2 * * *'
+- cron: '0 5 * * *'
   displayName: Daily test for phaser
   branches:
     include:
