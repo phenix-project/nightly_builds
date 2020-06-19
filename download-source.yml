@@ -1,12 +1,10 @@
 # Script for checking out sources and storing it as an artifact
 # The artifact name is "modules"
 #
-# Template Parameters:
-#   builder: cctbx builder (e.g. cctbx, phaser, etc.)
-#
 # Parameters:
 #   flags: <empty>, --use-conda
 #   optimization: <empty>, 0, 1, 2, 3
+#   builder: cctbx builder (e.g. cctbx, phaser, etc.)
 
 jobs:
 - job: modules${{ parameters.optimization }}

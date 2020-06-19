@@ -28,25 +28,13 @@ resources:
     project: cctbx_project
     source: 'Update build cache'
 
-parameters:
-  - name: builder
-    displayName: cctbx builder
-    type: string
-    default: phaser
-  - name: test_module
-    displayName: module to test
-    type: string
-    default: phaser_regression
-  - name: pipeline
-    displayName: pipeline name
-    type: string
-    default: phaser_regression
-
 stages:
 - stage: Preparation
   displayName: Download
   jobs:
     - template: ../download-source.yml
+      parameters:
+        builder: phaser
 
 - stage: Build
   displayName: Build and test
@@ -55,3 +43,6 @@ stages:
     - template: ../full-build.yml
       parameters:
         modules: modules
+        pipeline: phaser_regression
+        builder: phaser
+        test_module: phaser_regression
