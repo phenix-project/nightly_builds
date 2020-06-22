@@ -21,7 +21,7 @@ resources:
   pipelines:
   - pipeline: build_cache
     source: 'phaser_regression'
-  - pipeline: data_cache
+  - pipeline: cctbx_data_cache
     project: cctbx_project
     source: 'Update data cache'
   - pipeline: cctbx_build_cache

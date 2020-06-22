@@ -40,8 +40,8 @@ steps:
 - task: DownloadPipelineArtifact@2
   inputs:
     source: 'specific'
-    project: '$(resources.pipeline.data_cache.projectID)'
-    pipeline: '$(resources.pipeline.data_cache.pipelineID)'
+    project: '$(resources.pipeline.cctbx_data_cache.projectID)'
+    pipeline: '$(resources.pipeline.cctbx_data_cache.pipelineID)'
     artifact: 'miniconda'
     path: $(Pipeline.Workspace)/miniconda
   displayName: Download miniconda
