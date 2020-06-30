@@ -42,7 +42,6 @@ stages:
 
 - stage: Build
   displayName: Build and test
-  dependsOn: Preparation
   jobs:
     - template: ./full-build.yml
       parameters:
