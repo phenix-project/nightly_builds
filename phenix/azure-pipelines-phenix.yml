@@ -1,0 +1,49 @@
+# Script for nightly build of phenix
+
+# no continuous integration builds or pull requests
+trigger: none
+pr: none
+
+# Daily builds
+schedules:
+- cron: '0 3 * * *'
+  displayName: Daily test for phenix
+  branches:
+    include:
+    - master
+
+resources:
+  repositories:
+    - repository: cctbx_project
+      type: github
+      name: phenix-project/cctbx_project
+      endpoint: phenix-project
+  pipelines:
+  # - pipeline: build_cache
+  #   source: 'phenix_regression'
+  - pipeline: cctbx_data_cache
+    project: cctbx_project
+    source: 'Update data cache'
+  - pipeline: cctbx_build_cache
+    project: cctbx_project
+    source: 'Update build cache'
+
+stages:
+- stage: Preparation
+  displayName: Download
+  jobs:
+    - template: ../download-source.yml
+      parameters:
+        builder: phenix
+        flags: --cciuser=builder
+
+- stage: Build
+  displayName: Build and test
+  dependsOn: Preparation
+  jobs:
+    - template: ../full-build.yml
+      parameters:
+        modules: modules
+        pipeline: phenix_regression
+        builder: phenix
+        test_module: phenix
