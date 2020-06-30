@@ -94,15 +94,18 @@ jobs:
   - checkout: none
 
   - task: DownloadPipelineArtifact@2
-    displayName: Download modules tarball
     inputs:
-      source: 'current'
+      source: 'specific'
+      project: '$(resources.pipeline.data_cache.projectID)'
+      pipeline: '$(resources.pipeline.data_cache.pipelineID)'
       artifact: $(MODULES)
       path: $(Pipeline.Workspace)
+    displayName: Download modules tarball
 
   - script: |
       cd $(Pipeline.Workspace)
       tar -xf modules.tar
+      del modules.tar
       rmdir /Q /S modules\*\.svn\*
       rmdir /Q /S modules\*\.git\*
     displayName: Extract modules tarball
@@ -181,21 +184,21 @@ jobs:
   #            ne(variables['PYTHON_VERSION'], 'py27')))
   #   continueOnError: true
 
-  - script: |
-      cd $(Pipeline.Workspace)
-      tar -xf build.tar
-    displayName: Extract build tarball
-    condition: >
-      and(or(and(eq(variables['Build.DefinitionName'], '${{ parameters.pipeline }}'),
-                 ne(variables['day'], 'Sunday')),
-             eq(variables['Build.DefinitionName'], 'CI'),
-             eq(variables['Build.DefinitionName'], 'CI branch'),
-             eq(variables['Build.DefinitionName'], 'Full')),
-          or(and(eq(variables['PYTHON_VERSION'], 'py27'),
-                 eq('${{ parameters.vs }}', 'vs2015')),
-             ne(variables['PYTHON_VERSION'], 'py27')))
-    continueOnError: true
-    failOnStderr: false
+  # - script: |
+  #     cd $(Pipeline.Workspace)
+  #     tar -xf build.tar
+  #   displayName: Extract build tarball
+  #   condition: >
+  #     and(or(and(eq(variables['Build.DefinitionName'], '${{ parameters.pipeline }}'),
+  #                ne(variables['day'], 'Sunday')),
+  #            eq(variables['Build.DefinitionName'], 'CI'),
+  #            eq(variables['Build.DefinitionName'], 'CI branch'),
+  #            eq(variables['Build.DefinitionName'], 'Full')),
+  #         or(and(eq(variables['PYTHON_VERSION'], 'py27'),
+  #                eq('${{ parameters.vs }}', 'vs2015')),
+  #            ne(variables['PYTHON_VERSION'], 'py27')))
+  #   continueOnError: true
+  #   failOnStderr: false
 
   - script: |
       cd $(Pipeline.Workspace)

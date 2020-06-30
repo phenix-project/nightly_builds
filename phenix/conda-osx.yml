@@ -105,18 +105,18 @@ jobs:
   #        eq(variables['Build.DefinitionName'], 'Full'))
   #   continueOnError: true
 
-  - script: |
-      cd $(Pipeline.Workspace)
-      tar -xf build.tar
-    displayName: Extract build tarball
-    condition: >
-      or(and(eq(variables['Build.DefinitionName'], '${{ parameters.pipeline }}'),
-             ne(variables['day'], 'Sunday')),
-         eq(variables['Build.DefinitionName'], 'CI'),
-         eq(variables['Build.DefinitionName'], 'CI branch'),
-         eq(variables['Build.DefinitionName'], 'Full'))
-    continueOnError: true
-    failOnStderr: false
+  # - script: |
+  #     cd $(Pipeline.Workspace)
+  #     tar -xf build.tar
+  #   displayName: Extract build tarball
+  #   condition: >
+  #     or(and(eq(variables['Build.DefinitionName'], '${{ parameters.pipeline }}'),
+  #            ne(variables['day'], 'Sunday')),
+  #        eq(variables['Build.DefinitionName'], 'CI'),
+  #        eq(variables['Build.DefinitionName'], 'CI branch'),
+  #        eq(variables['Build.DefinitionName'], 'Full'))
+  #   continueOnError: true
+  #   failOnStderr: false
 
   # build
   - template: ./unix-conda-build.yml

@@ -30,6 +30,7 @@ steps:
     set -x -e
     cd $(Pipeline.Workspace)
     tar -xf modules.tar
+    rm modules.tar
     rm -fr modules/*/.svn/*
     rm -fr modules/*/.git/*
   displayName: Extract modules tarball
