@@ -112,7 +112,7 @@ jobs:
   - script: |
       cd $(Pipeline.Workspace)
       tar -xf modules.tar
-      del modules.tar
+      dir
       rmdir /Q /S modules\*\.svn\*
       rmdir /Q /S modules\*\.git\*
     displayName: Extract modules tarball
