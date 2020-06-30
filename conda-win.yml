@@ -235,7 +235,6 @@ jobs:
                    not(eq('${{ parameters.test_module }}', 'phenix')))
     failOnStderr: false
     displayName: Test
-    condition: not(eq('${{ parameters.test_module }}', 'phenix'))
 
   - script: |
       cd $(Pipeline.Workspace)
