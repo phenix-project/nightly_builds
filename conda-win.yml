@@ -229,9 +229,10 @@ jobs:
       mkdir tests
       cd tests
       call libtbx.run_tests_parallel module=${{ parameters.test_module }} nproc=4
-    condition: or(and(eq(variables['PYTHON_VERSION'], 'py27'),
-                      eq('${{ parameters.vs }}', 'vs2015')),
-                  ne(variables['PYTHON_VERSION'], 'py27'))
+    condition: and(or(and(eq(variables['PYTHON_VERSION'], 'py27'),
+                          eq('${{ parameters.vs }}', 'vs2015')),
+                      ne(variables['PYTHON_VERSION'], 'py27')),
+                   not(eq('${{ parameters.test_module }}', 'phenix')))
     failOnStderr: false
     displayName: Test
     condition: not(eq('${{ parameters.test_module }}', 'phenix'))
@@ -242,12 +243,12 @@ jobs:
       mkdir tests
       cd tests
       phenix_regression.run_tests_parallel nproc=4
-    condition: or(and(eq(variables['PYTHON_VERSION'], 'py27'),
-                      eq('${{ parameters.vs }}', 'vs2015')),
-                  ne(variables['PYTHON_VERSION'], 'py27'))
+    condition: and(or(and(eq(variables['PYTHON_VERSION'], 'py27'),
+                          eq('${{ parameters.vs }}', 'vs2015')),
+                      ne(variables['PYTHON_VERSION'], 'py27')),
+                   eq('${{ parameters.test_module }}', 'phenix'))
     failOnStderr: false
     displayName: Test
-    condition: eq('${{ parameters.test_module }}', 'phenix')
 
   - task: PublishTestResults@2
     condition: succeededOrFailed()
