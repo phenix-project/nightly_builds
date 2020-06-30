@@ -35,6 +35,9 @@ steps:
     rm -fr modules/*/.git/*
   displayName: Extract modules tarball
 
+# download test data
+- template: ./download-data.yml
+
 - script: |
     set -x -e
     cd $(Pipeline.Workspace)

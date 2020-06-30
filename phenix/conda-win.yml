@@ -110,6 +110,9 @@ jobs:
       rmdir /Q /S modules\*\.git\*
     displayName: Extract modules tarball
 
+  # download test data
+  - template: ./download-data.yml
+
   - script: |
       cd $(Pipeline.Workspace)
       copy modules\cctbx_project\libtbx\auto_build\bootstrap.py .
