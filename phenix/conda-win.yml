@@ -42,7 +42,7 @@ jobs:
   variables:
     artifact_name: ${{ parameters.vs }}_$(PYTHON_VERSION)
     day: $(Get-Date -Format dddd)
-    temp: "C:\Miniconda3\envs\temp\working"
+    temp: "C:\\Miniconda3\\envs\\temp\\working"
 
   steps:
   - script: |
