@@ -46,11 +46,6 @@ jobs:
 
   steps:
   - powershell: |
-      cd $(Pipeline.Workspace)
-      compact /C /S
-    displayName: Turn on disk compression
-
-  - powershell: |
       Write-Host $(temp)
       Write-Host "##vso[task.setVariable variable=temp]$(temp)"
     displayName: Get temporary directory
@@ -65,7 +60,6 @@ jobs:
 
   - powershell: |
       Get-CimInstance -Class CIM_LogicalDisk | Select-Object @{Name="Size(GB)";Expression={$_.size/1gb}}, @{Name="Free Space(GB)";Expression={$_.freespace/1gb}}, @{Name="Free (%)";Expression={"{0,6:P0}" -f(($_.freespace/1gb) / ($_.size/1gb))}}, DeviceID, DriveType | Where-Object DriveType -EQ '3'
-      compact
     displayName: Get disk information on host
 
   # install compilers
@@ -121,19 +115,15 @@ jobs:
 
   - script: |
       cd $(Pipeline.Workspace)
-      cd $(temp)
-      tar -xf modules.tar
-      del modules.tar
+      tar -xf $(temp)\modules.tar
     displayName: Extract modules tarball
 
   - powershell: |
       Get-CimInstance -Class CIM_LogicalDisk | Select-Object @{Name="Size(GB)";Expression={$_.size/1gb}}, @{Name="Free Space(GB)";Expression={$_.freespace/1gb}}, @{Name="Free (%)";Expression={"{0,6:P0}" -f(($_.freespace/1gb) / ($_.size/1gb))}}, DeviceID, DriveType | Where-Object DriveType -EQ '3'
-      compact
     displayName: Get disk information on host
 
   - script: |
       cd $(Pipeline.Workspace)
-      cd $(temp)
       copy modules\cctbx_project\libtbx\auto_build\bootstrap.py .
     displayName: Copy bootstrap.py
 
@@ -209,10 +199,7 @@ jobs:
 
   - script: |
       cd $(Pipeline.Workspace)
-      cd $(temp)
-      tar -xf build.tar
-      rm build.tar
-      compact /C /S .\build
+      tar -xf $(temp)\build.tar
     displayName: Extract build tarball
     condition: >
       and(or(and(eq(variables['Build.DefinitionName'], '${{ parameters.pipeline }}'),
@@ -228,12 +215,10 @@ jobs:
 
   - powershell: |
       Get-CimInstance -Class CIM_LogicalDisk | Select-Object @{Name="Size(GB)";Expression={$_.size/1gb}}, @{Name="Free Space(GB)";Expression={$_.freespace/1gb}}, @{Name="Free (%)";Expression={"{0,6:P0}" -f(($_.freespace/1gb) / ($_.size/1gb))}}, DeviceID, DriveType | Where-Object DriveType -EQ '3'
-      compact
     displayName: Get disk information on host
 
   - script: |
       cd $(Pipeline.Workspace)
-      cd $(temp)
       call "C:\Program Files (x86)\Common Files\Microsoft\Visual C++ for Python\9.0\vcvarsall.bat" amd64
       call %CONDA%\condabin\activate.bat %PYTHON_VERSION%
       python bootstrap.py build --builder=${{ parameters.builder }} --use-conda=%CONDA_PREFIX% --nproc=4
@@ -243,7 +228,6 @@ jobs:
 
   - script: |
       cd $(Pipeline.Workspace)
-      cd $(temp)
       call "C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\bin\amd64\vcvars64.bat"
       call %CONDA%\condabin\activate.bat %PYTHON_VERSION%
       python bootstrap.py build --builder=${{ parameters.builder }} --use-conda=%CONDA_PREFIX% --nproc=4
@@ -253,7 +237,6 @@ jobs:
 
   - script: |
       cd $(Pipeline.Workspace)
-      cd $(temp)
       call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" x64
       call %CONDA%\condabin\activate.bat %PYTHON_VERSION%
       python bootstrap.py build --builder=${{ parameters.builder }} --use-conda=%CONDA_PREFIX% --nproc=4
@@ -261,45 +244,46 @@ jobs:
                    eq('${{ parameters.vs }}', 'vs2017'))
     displayName: Configure and Build (Python 3, vs2017)
 
+  - powershell: |
+      Get-CimInstance -Class CIM_LogicalDisk | Select-Object @{Name="Size(GB)";Expression={$_.size/1gb}}, @{Name="Free Space(GB)";Expression={$_.freespace/1gb}}, @{Name="Free (%)";Expression={"{0,6:P0}" -f(($_.freespace/1gb) / ($_.size/1gb))}}, DeviceID, DriveType | Where-Object DriveType -EQ '3'
+    displayName: Get disk information on host
+
   # test
-  - script: |
-      cd $(Pipeline.Workspace)
-      cd $(temp)
-      call .\build\setpaths.bat
-      mkdir tests
-      cd tests
-      call libtbx.run_tests_parallel module=${{ parameters.test_module }} nproc=4
-    condition: and(or(and(eq(variables['PYTHON_VERSION'], 'py27'),
-                          eq('${{ parameters.vs }}', 'vs2015')),
-                      ne(variables['PYTHON_VERSION'], 'py27')),
-                   not(eq('${{ parameters.test_module }}', 'phenix')))
-    failOnStderr: false
-    displayName: Test
+  # - script: |
+  #     cd $(Pipeline.Workspace)
+  #     call .\build\setpaths.bat
+  #     mkdir tests
+  #     cd tests
+  #     call libtbx.run_tests_parallel module=${{ parameters.test_module }} nproc=4
+  #   condition: and(or(and(eq(variables['PYTHON_VERSION'], 'py27'),
+  #                         eq('${{ parameters.vs }}', 'vs2015')),
+  #                     ne(variables['PYTHON_VERSION'], 'py27')),
+  #                  not(eq('${{ parameters.test_module }}', 'phenix')))
+  #   failOnStderr: false
+  #   displayName: Test
 
-  - script: |
-      cd $(Pipeline.Workspace)
-      cd $(temp)
-      call .\build\setpaths.bat
-      mkdir tests
-      cd tests
-      phenix_regression.run_tests_parallel nproc=4
-    condition: and(or(and(eq(variables['PYTHON_VERSION'], 'py27'),
-                          eq('${{ parameters.vs }}', 'vs2015')),
-                      ne(variables['PYTHON_VERSION'], 'py27')),
-                   eq('${{ parameters.test_module }}', 'phenix'))
-    failOnStderr: false
-    displayName: Test
+  # - script: |
+  #     cd $(Pipeline.Workspace)
+  #     call .\build\setpaths.bat
+  #     mkdir tests
+  #     cd tests
+  #     phenix_regression.run_tests_parallel nproc=4
+  #   condition: and(or(and(eq(variables['PYTHON_VERSION'], 'py27'),
+  #                         eq('${{ parameters.vs }}', 'vs2015')),
+  #                     ne(variables['PYTHON_VERSION'], 'py27')),
+  #                  eq('${{ parameters.test_module }}', 'phenix'))
+  #   failOnStderr: false
+  #   displayName: Test
 
-  - task: PublishTestResults@2
-    condition: succeededOrFailed()
-    inputs:
-      testResultsFormat: 'JUnit'
-      testResultsFiles: '$(Pipeline.Workspace)\tests\output.xml'
+  # - task: PublishTestResults@2
+  #   condition: succeededOrFailed()
+  #   inputs:
+  #     testResultsFormat: 'JUnit'
+  #     testResultsFiles: '$(Pipeline.Workspace)\tests\output.xml'
 
   # preserve permissions
   - script: |
       cd $(Pipeline.Workspace)
-      cd $(temp)
       tar -chf build.tar build
     displayName: Build tarball
     condition: >
@@ -314,8 +298,7 @@ jobs:
     continueOnError: true
 
   # cache build directory every week for regular optimization build
-  # - publish: $(Pipeline.Workspace)/build.tar
-  - publish: $(temp)/build.tar
+  - publish: $(Pipeline.Workspace)/build.tar
     artifact: $(artifact_name)
     condition: >
       and(eq(variables['Build.DefinitionName'], '${{ parameters.pipeline }}'),
