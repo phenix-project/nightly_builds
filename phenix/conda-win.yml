@@ -47,6 +47,8 @@ jobs:
   - powershell: |
       cd $(Pipeline.Workspace)
       compact /C /S
+      python -c "import tempfile; print(tempfile.gettempdir())"
+      echo %TEMP%
     displayName: Turn on disk compression
 
   - powershell: |
