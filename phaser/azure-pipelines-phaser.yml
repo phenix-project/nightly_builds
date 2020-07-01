@@ -19,8 +19,8 @@ resources:
       name: phenix-project/cctbx_project
       endpoint: phenix-project
   pipelines:
-  - pipeline: build_cache
-    source: 'phaser_regression'
+  # - pipeline: build_cache
+  #   source: 'phaser_regression'
   - pipeline: cctbx_data_cache
     project: cctbx_project
     source: 'Update data cache'
