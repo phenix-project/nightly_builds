@@ -46,7 +46,7 @@ jobs:
   steps:
   - powershell: |
       cd $(Pipeline.Workspace)
-      compact /C /S .
+      compact /C /S
     displayName: Turn on disk compression
 
   - powershell: |
