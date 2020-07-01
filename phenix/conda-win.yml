@@ -116,6 +116,7 @@ jobs:
       cd $(Pipeline.Workspace)
       tar -xf modules.tar
       del modules.tar
+      compact /C /S
     displayName: Extract modules tarball
 
   - script: |
@@ -195,6 +196,8 @@ jobs:
   - script: |
       cd $(Pipeline.Workspace)
       tar -xf build.tar
+      rm build.tar
+      compact /C /S
     displayName: Extract build tarball
     condition: >
       and(or(and(eq(variables['Build.DefinitionName'], '${{ parameters.pipeline }}'),
