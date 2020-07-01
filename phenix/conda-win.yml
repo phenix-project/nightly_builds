@@ -42,7 +42,7 @@ jobs:
   variables:
     artifact_name: ${{ parameters.vs }}_$(PYTHON_VERSION)
     day: $(Get-Date -Format dddd)
-    temp: python -c "import tempfile; print(tempfile.gettempdir())"
+    temp: $(python -c "import tempfile; print(tempfile.gettempdir())")
 
   steps:
   - powershell: |
