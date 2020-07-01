@@ -14,8 +14,8 @@ schedules:
 
 resources:
   pipelines:
-  - pipeline: build_cache
-    source: 'phenix_regression'
+  # - pipeline: build_cache
+  #   source: 'phenix_regression'
   - pipeline: data_cache
     project: phenix
     source: 'Download sources'
