@@ -46,10 +46,12 @@ jobs:
 
   steps:
   - script: |
+      echo on
       call %CONDA%\condabin\conda.bat create -n temp -y -c conda-forge python
       call %CONDA%\condabin\activate.bat temp
       cd %CONDA_PREFIX%
       mkdir working
+      dir
     displayName: Get temporary directory
 
   - powershell: |
@@ -116,8 +118,10 @@ jobs:
     displayName: Download modules tarball
 
   - script: |
+      echo on
       cd $(Pipeline.Workspace)
       cd $(temp)
+      dir
       tar -xf modules.tar
     displayName: Extract modules tarball
 
