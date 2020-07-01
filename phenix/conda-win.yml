@@ -42,12 +42,14 @@ jobs:
   variables:
     artifact_name: ${{ parameters.vs }}_$(PYTHON_VERSION)
     day: $(Get-Date -Format dddd)
-    temp: $(python -c "import tempfile; print(tempfile.gettempdir())")
+    temp: "C:\Miniconda3\envs\temp\working"
 
   steps:
-  - powershell: |
-      Write-Host $(temp)
-      Write-Host "##vso[task.setVariable variable=temp]$(temp)"
+  - script: |
+      call %CONDA%\condabin\conda.bat create -n temp -y -c conda-forge python
+      call %CONDA%\condabin\activate.bat temp
+      cd %CONDA_PREFIX%
+      mkdir working
     displayName: Get temporary directory
 
   - powershell: |
@@ -115,7 +117,8 @@ jobs:
 
   - script: |
       cd $(Pipeline.Workspace)
-      tar -xf $(temp)\modules.tar
+      cd $(temp)
+      tar -xf modules.tar
     displayName: Extract modules tarball
 
   - powershell: |
