@@ -116,8 +116,13 @@ jobs:
       cd $(Pipeline.Workspace)
       tar -xf modules.tar
       del modules.tar
-      compact /C /S
+      compact /C /S .\modules
     displayName: Extract modules tarball
+
+  - powershell: |
+      Get-CimInstance -Class CIM_LogicalDisk | Select-Object @{Name="Size(GB)";Expression={$_.size/1gb}}, @{Name="Free Space(GB)";Expression={$_.freespace/1gb}}, @{Name="Free (%)";Expression={"{0,6:P0}" -f(($_.freespace/1gb) / ($_.size/1gb))}}, DeviceID, DriveType | Where-Object DriveType -EQ '3'
+      compact
+    displayName: Get disk information on host
 
   - script: |
       cd $(Pipeline.Workspace)
@@ -126,7 +131,7 @@ jobs:
 
   # create conda environment
   - script: |
-      call %CONDA%\condabin\conda.bat install -y -n base conda=4.7
+      call %CONDA%\condabin\conda.bat install -y -n base conda=4.8
     displayName: Update conda
 
   # - task: DownloadPipelineArtifact@2
@@ -197,7 +202,7 @@ jobs:
       cd $(Pipeline.Workspace)
       tar -xf build.tar
       rm build.tar
-      compact /C /S
+      compact /C /S .\build
     displayName: Extract build tarball
     condition: >
       and(or(and(eq(variables['Build.DefinitionName'], '${{ parameters.pipeline }}'),
