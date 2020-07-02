@@ -31,8 +31,6 @@ steps:
     cd $(Pipeline.Workspace)
     tar -xf modules.tar
     rm modules.tar
-    rm -fr modules/*/.svn/*
-    rm -fr modules/*/.git/*
   displayName: Extract modules tarball
 
 - script: |
@@ -124,31 +122,31 @@ steps:
   displayName: Configure and Build
 
 # test
-- script: |
-    set -x -e
-    source $(Pipeline.Workspace)/miniconda/etc/profile.d/conda.sh
-    conda activate $(PYTHON_VERSION)
-    cd $(Pipeline.Workspace)
-    source ./build/setpaths.sh
-    mkdir tests
-    cd tests
-    libtbx.run_tests_parallel module=${{ parameters.test_module }} nproc=4
-  failOnStderr: false
-  displayName: Test
-  condition: not(eq('${{ parameters.test_module }}', 'phenix'))
+# - script: |
+#     set -x -e
+#     source $(Pipeline.Workspace)/miniconda/etc/profile.d/conda.sh
+#     conda activate $(PYTHON_VERSION)
+#     cd $(Pipeline.Workspace)
+#     source ./build/setpaths.sh
+#     mkdir tests
+#     cd tests
+#     libtbx.run_tests_parallel module=${{ parameters.test_module }} nproc=4
+#   failOnStderr: false
+#   displayName: Test
+#   condition: not(eq('${{ parameters.test_module }}', 'phenix'))
 
-- script: |
-    set -x -e
-    source $(Pipeline.Workspace)/miniconda/etc/profile.d/conda.sh
-    conda activate $(PYTHON_VERSION)
-    cd $(Pipeline.Workspace)
-    source ./build/setpaths.sh
-    mkdir tests
-    cd tests
-    phenix_regression.test_all_parallel nproc=4
-  failOnStderr: false
-  displayName: Test
-  condition: eq('${{ parameters.test_module }}', 'phenix')
+# - script: |
+#     set -x -e
+#     source $(Pipeline.Workspace)/miniconda/etc/profile.d/conda.sh
+#     conda activate $(PYTHON_VERSION)
+#     cd $(Pipeline.Workspace)
+#     source ./build/setpaths.sh
+#     mkdir tests
+#     cd tests
+#     phenix_regression.test_all_parallel nproc=4
+#   failOnStderr: false
+#   displayName: Test
+#   condition: eq('${{ parameters.test_module }}', 'phenix')
 
 - task: PublishTestResults@2
   condition: succeededOrFailed()
