@@ -15,6 +15,7 @@ schedules:
 resources:
   pipelines:
   - pipeline: build_cache
+    project: nightly_builds
     source: 'phenix_regression'
   - pipeline: data_cache
     project: phenix
