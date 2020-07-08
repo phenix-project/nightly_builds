@@ -98,6 +98,13 @@ jobs:
   # download components
   - checkout: none
 
+  # download public key
+  - task: DownloadSecureFile@1
+    name: private_key
+    inputs:
+      secureFile: 'id_rsa'
+    displayName: Download private key
+
   - task: DownloadPipelineArtifact@2
     inputs:
       source: 'specific'
@@ -107,9 +114,21 @@ jobs:
       path: $(Pipeline.Workspace)
     displayName: Download modules tarball
 
+  - task: DownloadPipelineArtifact@2
+    inputs:
+      source: 'specific'
+      project: '$(resources.pipeline.data_cache.projectID)'
+      pipeline: '$(resources.pipeline.data_cache.pipelineID)'
+      artifact: password
+      path: $(Pipeline.Workspace)
+    displayName: Download password
+
   - script: |
       echo on
       cd $(Pipeline.Workspace)
+      openssl rsautl -decrypt -inkey $(private_key.secureFilePath) -in password.enc -out password
+      openssl enc -d -aes-256-cbc -in modules.enc -out modules.tar -pass file:.\password
+      del modules.enc
       tar -xf modules.tar
       del modules.tar
     displayName: Extract modules tarball
@@ -171,26 +190,26 @@ jobs:
              ne(variables['PYTHON_VERSION'], 'py27')))
     continueOnError: true
 
-  # - task: DownloadPipelineArtifact@2
-  #   inputs:
-  #     source: 'specific'
-  #     project: '$(resources.pipeline.build_cache.projectID)'
-  #     pipeline: '$(resources.pipeline.build_cache.pipelineID)'
-  #     allowPartiallySucceededBuilds: true
-  #     allowFailedBuilds: true
-  #     artifact: '$(artifact_name)'
-  #     path: $(Pipeline.Workspace)
-  #   displayName: Download cached build
-  #   condition: >
-  #     and(or(and(eq(variables['Build.DefinitionName'], '${{ parameters.pipeline }}'),
-  #                ne(variables['day'], 'Sunday')),
-  #            eq(variables['Build.DefinitionName'], 'CI'),
-  #            eq(variables['Build.DefinitionName'], 'CI branch'),
-  #            eq(variables['Build.DefinitionName'], 'Full')),
-  #         or(and(eq(variables['PYTHON_VERSION'], 'py27'),
-  #                eq('${{ parameters.vs }}', 'vs2015')),
-  #            ne(variables['PYTHON_VERSION'], 'py27')))
-  #   continueOnError: true
+  - task: DownloadPipelineArtifact@2
+    inputs:
+      source: 'specific'
+      project: '$(resources.pipeline.build_cache.projectID)'
+      pipeline: '$(resources.pipeline.build_cache.pipelineID)'
+      allowPartiallySucceededBuilds: true
+      allowFailedBuilds: true
+      artifact: '$(artifact_name)'
+      path: $(Pipeline.Workspace)
+    displayName: Download cached build
+    condition: >
+      and(or(and(eq(variables['Build.DefinitionName'], '${{ parameters.pipeline }}'),
+                 ne(variables['day'], 'Sunday')),
+             eq(variables['Build.DefinitionName'], 'CI'),
+             eq(variables['Build.DefinitionName'], 'CI branch'),
+             eq(variables['Build.DefinitionName'], 'Full')),
+          or(and(eq(variables['PYTHON_VERSION'], 'py27'),
+                 eq('${{ parameters.vs }}', 'vs2015')),
+             ne(variables['PYTHON_VERSION'], 'py27')))
+    continueOnError: true
 
   - script: |
       cd $(Pipeline.Workspace)

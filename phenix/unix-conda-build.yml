@@ -17,6 +17,13 @@ steps:
 # download components
 - checkout: none
 
+# download public key
+- task: DownloadSecureFile@1
+  name: private_key
+  inputs:
+    secureFile: 'id_rsa'
+  displayName: Download private key
+
 - task: DownloadPipelineArtifact@2
   inputs:
     source: 'specific'
@@ -26,9 +33,21 @@ steps:
     path: $(Pipeline.Workspace)
   displayName: Download modules tarball
 
+- task: DownloadPipelineArtifact@2
+  inputs:
+    source: 'specific'
+    project: '$(resources.pipeline.data_cache.projectID)'
+    pipeline: '$(resources.pipeline.data_cache.pipelineID)'
+    artifact: password
+    path: $(Pipeline.Workspace)
+  displayName: Download password
+
 - script: |
     set -x -e
     cd $(Pipeline.Workspace)
+    openssl rsautl -decrypt -inkey $(private_key.secureFilePath) -in password.enc -out password
+    openssl enc -d -aes-256-cbc -in modules.enc -out modules.tar -pass file:./password
+    rm modules.enc
     tar -xf modules.tar
     rm modules.tar
   displayName: Extract modules tarball
