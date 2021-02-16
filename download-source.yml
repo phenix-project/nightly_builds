@@ -9,7 +9,7 @@
 jobs:
 - job: modules${{ parameters.optimization }}
   pool:
-    vmImage: ubuntu-latest
+    vmImage: ubuntu-18.04
   timeoutInMinutes: 90
 
   steps:
